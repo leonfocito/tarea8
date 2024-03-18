@@ -116,7 +116,7 @@ public class Principal {
                             }
                         } while (!Validaciones.compruebaEmail(email));
                         /*Imprime el menú de asignaturas, guarda la asignatura seleccionada
-y crea el objeto en la posición reservada para esa asignatura*/
+y crea el objeto con el valor de la posición reservada para esa asignatura*/
                          
                         opcion=0;
                         while (opcion < 1 || opcion > 8){
@@ -126,10 +126,10 @@ y crea el objeto en la posición reservada para esa asignatura*/
                                 sc.nextLine();
                                 if (opcion >=1 || opcion < 8) {
                                     Asignaturas asignatura = Asignaturas.values()[opcion - 1];
-                                    //c.insertaProfesor(dni, id, nom, email, fechaAltaProfesor, asignatura);
+                                    c.insertaProfesor(dni, id, nom, email, fechaAltaProfesor, asignatura);
                                     System.out.println("Profesor creado con éxito");
                                 }
-                            } catch (ArrayIndexOutOfBoundsException e) {
+                            } catch (Exception e) {
                                 System.out.println("El número tiene que ser entre 1 y 7");
                             }
 
