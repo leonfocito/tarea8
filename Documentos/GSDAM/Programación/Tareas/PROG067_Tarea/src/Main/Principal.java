@@ -95,12 +95,18 @@ public class Principal {
 //Comprobamos si la fecha de alta es anterior a la del inicio del curso
                         try {
                             do {
-                                System.out.println("Fecha de alta del profesor");
+                                System.out.println("Escribe la fecha de alta del profesor");
                                 fechaAltaProfesor = Validaciones.formateaFecha(sc.nextLine());
-                            } while (fechaAltaProfesor.isAfter(Curso.getFechaInicio()));
-                        } catch (Exception e) {
-                            System.out.println("La fecha debe ser anterior al inicio del curso");
+                                if (fechaAltaProfesor != null) {
+                                    if (fechaAltaProfesor.isAfter(Curso.getFechaInicio())) {
+                                        System.out.println("La fecha debe ser anterior al inicio del curso");
+                                    }
+                                }
+                            } while (fechaAltaProfesor == null || fechaAltaProfesor.isAfter(Curso.getFechaInicio()));
+                        } catch (NullPointerException ex) {
+                            System.out.println("La fecha no es válida");
                         }
+
 //Comprobamos si el email es correcto 
                         do {
                             System.out.println("Escribe el email");
@@ -109,18 +115,28 @@ public class Principal {
                                 System.out.println("El email no es válido");
                             }
                         } while (!Validaciones.compruebaEmail(email));
-/*Imprime el menú de asignaturas, guarda la asignatura seleccionada
-y crea el objeto en la posición reservada para esa asignatura
-                        */
-                        System.out.println("Elige la asignatura que imparte");
-                        Asignaturas.imprimeAsignatura();
-                        int opcionAsig = sc.nextInt();
-                        sc.nextLine();
-                        Asignaturas asignatura = Asignaturas.values()[opcionAsig - 1];
-                        c.insertaProfesor(dni, id, nom, email, fechaAltaProfesor, asignatura);
-                    }
-                    System.out.println("Profesor creado con éxito");
-                    break;
+                        /*Imprime el menú de asignaturas, guarda la asignatura seleccionada
+y crea el objeto en la posición reservada para esa asignatura*/
+                         
+                        opcion=0;
+                        while (opcion < 1 || opcion > 8){
+                            try {
+                                Asignaturas.imprimeAsignatura();
+                                opcion = sc.nextInt();
+                                sc.nextLine();
+                                if (opcion >=1 || opcion < 8) {
+                                    Asignaturas asignatura = Asignaturas.values()[opcion - 1];
+                                    //c.insertaProfesor(dni, id, nom, email, fechaAltaProfesor, asignatura);
+                                    System.out.println("Profesor creado con éxito");
+                                }
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                System.out.println("El número tiene que ser entre 1 y 7");
+                            }
+
+                        } 
+
+                        break;
+                    }  
                 case 3:
 
                     break;
@@ -141,7 +157,6 @@ y crea el objeto en la posición reservada para esa asignatura
                     break;
             }
 
-        } while (opcion
-                != 8);
+        } while (opcion != 8);
     }
 }
