@@ -92,7 +92,7 @@ public enum Asignaturas {
     }
 
     public static void imprimeAsignatura() {
-        System.out.println("Seleccionar el oficio del operario (teclea el número de la lista):");
+        System.out.println("Seleccione la asignatura que imparte(teclea el número de la lista):");
         for (int i = 0; i < Asignaturas.values().length; i++) {
             System.out.println((i + 1) + "." + Asignaturas.values()[i].getDescripcion());
         }
