@@ -132,7 +132,17 @@ public class Curso {
         return datos;
 
     }
-
+     public boolean buscaProfesor(String id) {
+        
+        for(int p=0;p<relacionProfesores.length-1;p++){
+              if(relacionProfesores[p].getIdentificador().equalsIgnoreCase(id)){
+                  return true;
+              }
+            }
+        return false;
+        }
+        
+     
     /**
      * Método que busca un alumno por su id.
      *
