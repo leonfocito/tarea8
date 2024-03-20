@@ -16,7 +16,7 @@ public class Curso {
     private final int NUM_ASIGNATURAS = 7;
     private final int MAX_ALUMNOS = 100;
     private final String NOMBRE = "DAM 1 E-Learning";
-    
+
     private static LocalDate fechaInicio;
     private static LocalDate fechaFin;
     private Estudiante[] relacionAlumnos = new Estudiante[MAX_ALUMNOS];
@@ -29,12 +29,32 @@ public class Curso {
         Curso.fechaInicio = fechaInicio;
         Curso.fechaFin = fechaFin;
         Curso.creado = true;
-        
+
+    }
+
+    public int[][] getAsignaturasAlumnos() {
+        return asignaturasAlumnos;
+    }
+
+    public void setAsignaturasAlumnos(int[][] asignaturasAlumnos) {
+        this.asignaturasAlumnos = asignaturasAlumnos;
+    }
+
+    public int getNumAlumnosMatriculados() {
+        return numAlumnosMatriculados;
     }
 
     /*
     Metodos getter y setter
      */
+    public int getNUM_ASIGNATURAS() {
+        return NUM_ASIGNATURAS;
+    }
+
+    public void setNumAlumnosMatriculados(int numAlumnosMatriculados) {
+        this.numAlumnosMatriculados = numAlumnosMatriculados;
+    }
+
     public static LocalDate getFechaInicio() {
         return fechaInicio;
     }
@@ -139,26 +159,39 @@ public class Curso {
         return cod;
     }
 
-    public void insertaNotas(int nota) {
-
-        for (int i = 0; i < NUM_ASIGNATURAS - 1; i++) {
-            asignaturasAlumnos[numAlumnosMatriculados][i] = nota;
-        }
-        /**
-         * Método que busca un alumno por su id.
-         *
-         * @param id Id por el que buscar al alumno
-         * @return
-         */
-
-    }
-
+    /**
+     * Método que busca un alumno por su id.
+     *
+     * @param id Id por el que buscar al alumno
+     * @return
+     */
     public String informeAlumno(String id) {
         return buscaAlumno(id);
     }
 
     public void insertaProfesor(String dni, String id, String nom, String email, LocalDate alta, Asignaturas asignatura) {
-        int pos=Asignaturas.obtenerPosicionPorCodigo(asignatura.getCodigo());
-        relacionProfesores[pos]=new Profesor(dni, id, nom, email, alta, asignatura);
+        int pos = Asignaturas.obtenerPosicionPorCodigo(asignatura.getCodigo());
+        relacionProfesores[pos] = new Profesor(dni, id, nom, email, alta, asignatura);
+    }
+
+    public void actualizaNota(String id, Asignaturas asignatura, int nota) {
+        try {
+            int posAlumno = 0;
+            for (int e = 0; e < numAlumnosMatriculados; e++) {
+                if (relacionAlumnos[e].getIdentificador().equalsIgnoreCase(id)) {
+                    posAlumno = e;
+                } else {
+                    System.out.println("El id no existe");
+                }
+
+            }
+            int posAsign;
+            posAsign = Asignaturas.obtenerPosicionPorCodigo(asignatura.getCodigo());
+            asignaturasAlumnos[posAlumno][posAsign] = nota;
+            System.out.println("Nota actualizada");
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.out.println("El alumno o la asignatura no existen");
+        }
+
     }
 }

@@ -43,12 +43,12 @@ public class Profesor extends Persona {
     
    public String imprimeDatos(){
         
-        return "Nombre del alumno"+getNombreCompleto()+"\n"
+        return "Nombre del profesor: "+getNombreCompleto()+"\n"
                 + "Dni: "+getDni()+"\n"
                 + "Identificador: "+ getIdentificador()+"\n"
                 + "Email: "+ getEmail()+"\n"
                 + "Fecha de matrícula:"+ this.fecha_alta+"\n"
-                + "Asignatura que imparte: "+this.asignatura;
+                + "Asignatura que imparte: "+this.asignatura.getDescripcion();
         
     }
      

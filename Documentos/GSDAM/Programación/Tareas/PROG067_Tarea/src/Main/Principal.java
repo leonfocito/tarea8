@@ -117,14 +117,14 @@ public class Principal {
                         } while (!Validaciones.compruebaEmail(email));
                         /*Imprime el menú de asignaturas, guarda la asignatura seleccionada
 y crea el objeto con el valor de la posición reservada para esa asignatura*/
-                         
-                        opcion=0;
-                        while (opcion < 1 || opcion > 8){
+
+                        opcion = 0;
+                        while (opcion < 1 || opcion > 8) {
                             try {
                                 Asignaturas.imprimeAsignatura();
                                 opcion = sc.nextInt();
                                 sc.nextLine();
-                                if (opcion >=1 || opcion < 8) {
+                                if (opcion >= 1 || opcion < 8) {
                                     Asignaturas asignatura = Asignaturas.values()[opcion - 1];
                                     c.insertaProfesor(dni, id, nom, email, fechaAltaProfesor, asignatura);
                                     System.out.println("Profesor creado con éxito");
@@ -133,15 +133,132 @@ y crea el objeto con el valor de la posición reservada para esa asignatura*/
                                 System.out.println("El número tiene que ser entre 1 y 7");
                             }
 
-                        } 
+                        }
 
                         break;
-                    }  
+                    }
                 case 3:
+                    String id = "";
+                    String nom = "";
+                    LocalDate fechaMatricula = null;
+                    String dni = "";
+                    String email;
+//Comprueba el identificador del estudiante                    
+                    while (!Estudiante.identificadorValido(id)) {
+                        System.out.println("Introduce el identificador del alumno");
+                        id = sc.nextLine();
+                        if (id.equalsIgnoreCase("x")) {
+                            System.out.println("Operación cancelada");
+                            break;
+                        }
+                        if (Estudiante.identificadorValido(id)) {
+                            System.out.println("ID Válido\n");
+                        }
+                    }
+//Comprueba que el campo nombre no esté vacío y si su longitud es mayor de 40 caracteres                      
+                    while (Persona.compruebaNombreVacio(nom)) {
+                        System.out.println("Introduce el nombre del alumno");
+                        nom = sc.nextLine();
+                        if (Persona.compruebaNombreVacio(nom)) {
+                            System.out.println("El campo no puede estar en blanco\n");
+                        } else if (nom.length() > 40) {
+                            nom = nom.substring(0, 40);
+                            System.out.println("El nombre es demasiado largo. Solo se guardarán los 40 primeros caracteres\n");
+                        }
+                    }
+//Comprueba que la fecha de matrícula tenga el formato correcto y que esté comprendinda entre el inicio y el fin del curso                 
+                    try {
+                        do {
+                            System.out.println("Escribe la fecha de alta del profesor");
+                            fechaMatricula = Validaciones.formateaFecha(sc.nextLine());
+                            if (fechaMatricula != null) {
+                                if (fechaMatricula.isAfter(Curso.getFechaInicio())) {
+                                    System.out.println("La fecha debe ser anterior al inicio del curso");
+                                }
+                            }
+                        } while (fechaMatricula == null || fechaMatricula.isAfter(Curso.getFechaInicio()) && fechaMatricula.isBefore(Curso.getFechaFin()));
+                    } catch (NullPointerException ex) {
+                        System.out.println("La fecha no es válida");
+                    }
+                    //Comprueba que el DNI/NIE sea válido
+                    while (!Validaciones.validaDni(dni)) {
+                        System.out.println("Escribe el dni");
+                        dni = sc.nextLine();
+                        Validaciones.validaDni(dni);
+                    }
+//Comprueba el correo del estudiante
+                    do {
+                        System.out.println("Escribe el email");
+                        email = sc.nextLine();
+                        if (!Validaciones.compruebaEmail(email)) {
+                            System.out.println("El email no es válido");
+                        }
+                    } while (!Validaciones.compruebaEmail(email));
+                    //Se crea el usuario invocando el método insertaAlumno() de la clase Curso
+                    try {
+                        if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == 0) {
+                            System.out.println("Estudiante creado con éxito");
+                            int numAlumno = c.getNumAlumnosMatriculados();
+                            for (int i = 0; i < Asignaturas.values().length - 1; i++) {
+                                int[][] nota = new int[numAlumno][c.getNUM_ASIGNATURAS()];
+                                System.out.println("Introduce la nota de" + Asignaturas.values()[i].getDescripcion());
+                                nota[numAlumno][i] = sc.nextInt();
+                                sc.nextLine();
+                                c.setAsignaturasAlumnos(nota);
+                            }
+
+                        }
+                        if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == -1) {
+                            System.out.println("El curso debe estar creado primero");
+                        }
+                        if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == -2) {
+                            System.out.println("El estudiante ya existe");
+                        }
+                        if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == -3) {
+                            System.out.println("No hay más espacio");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("El cupo de alumnos está lleno");
+                    }
 
                     break;
-                case 4:
 
+                case 4:
+                    if (!Curso.getCreado()) {
+                        System.out.println("El curso debe estar creado primero");
+                    } else {
+                        String iden;
+                        Asignaturas asignatura = null;
+                        System.out.println("Escoge el alumno por su id");
+                        for (int i = 0; i < c.getNumAlumnosMatriculados(); i++) {
+                            System.out.println("id: " + c.getRelacionAlumnos()[i].getIdentificador() + " " + c.getRelacionAlumnos()[i].getNombreCompleto());
+                        }
+                        iden = sc.nextLine();
+                        opcion = 0;
+                        while (opcion < 1 || opcion > 8) {
+                            try {
+                                Asignaturas.imprimeAsignatura();
+                                opcion = sc.nextInt();
+                                sc.nextLine();
+                                if (opcion >= 1 || opcion < 8) {
+                                    asignatura = Asignaturas.values()[opcion - 1];
+                                }
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                System.out.println("El número tiene que ser entre 1 y 7");
+                            }
+
+                        }
+                        int nota;
+                        do {
+                            System.out.println("Introduce la nueva nota");
+                            nota = sc.nextInt();
+                            if (nota < 0 || nota > 10) {
+                                System.out.println("La nota tiene que estar entre 1 y 10");
+                            }
+                        } while (nota < 0 || nota > 10);
+                        c.actualizaNota(iden, asignatura, nota);
+
+                    }
                     break;
                 case 5:
 
