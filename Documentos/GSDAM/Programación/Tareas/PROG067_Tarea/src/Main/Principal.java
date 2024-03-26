@@ -207,7 +207,7 @@ y crea el objeto con el valor de la posición reservada para esa asignatura*/
                                     System.out.println("Introduce la nota de" + Asignaturas.values()[i].getDescripcion());
                                     nota[numAlumno][i] = sc.nextInt();
                                     sc.nextLine();
-                                    c.setAsignaturasAlumnos(nota);
+                                    c.setNotasAlum(nota);
                                 }
 
                             }
@@ -270,7 +270,12 @@ y crea el objeto con el valor de la posición reservada para esa asignatura*/
                         String id;
                         System.out.println("Dame el id del profesor");
                         id=sc.nextLine();
-                        c.buscaProfesor(id);
+                        if (!c.existeProfesor(id)){
+                            System.out.println("El id no es válido");
+                        }else{
+                            System.out.println("Id:"+id+"\n"
+                                    + "Asignatura:");
+                        }
                     }
                     break;
                 case 6:
