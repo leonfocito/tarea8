@@ -21,7 +21,7 @@ public class Curso {
     private static LocalDate fechaFin;
     private Estudiante[] relacionAlumnos = new Estudiante[MAX_ALUMNOS];
     private Profesor[] relacionProfesores = new Profesor[NUM_ASIGNATURAS];
-    private int[][] asignaturasAlumnos = new int[MAX_ALUMNOS][NUM_ASIGNATURAS];
+    private int[][] notasAlum = new int[MAX_ALUMNOS][NUM_ASIGNATURAS];
     private int numAlumnosMatriculados = 0;
     private static boolean creado = true;
 
@@ -32,12 +32,12 @@ public class Curso {
 
     }
 
-    public int[][] getAsignaturasAlumnos() {
-        return asignaturasAlumnos;
+    public int[][] getNotasAlum() {
+        return notasAlum;
     }
 
-    public void setAsignaturasAlumnos(int[][] asignaturasAlumnos) {
-        this.asignaturasAlumnos = asignaturasAlumnos;
+    public void setNotasAlum(int[][] notasAlum) {
+        this.notasAlum = notasAlum;
     }
 
     public int getNumAlumnosMatriculados() {
@@ -132,17 +132,17 @@ public class Curso {
         return datos;
 
     }
-     public boolean buscaProfesor(String id) {
-        
-        for(int p=0;p<relacionProfesores.length-1;p++){
-              if(relacionProfesores[p].getIdentificador().equalsIgnoreCase(id)){
-                  return true;
-              }
+
+    public boolean existeProfesor(String id) {
+
+        for (int p = 0; p < relacionProfesores.length - 1; p++) {
+            if (relacionProfesores[p].getIdentificador().equalsIgnoreCase(id)) {
+                return true;
             }
-        return false;
         }
-        
-     
+        return false;
+    }
+
     /**
      * Método que busca un alumno por su id.
      *
@@ -197,9 +197,9 @@ public class Curso {
             }
             int posAsign;
             posAsign = Asignaturas.obtenerPosicionPorCodigo(asignatura.getCodigo());
-            asignaturasAlumnos[posAlumno][posAsign] = nota;
+            notasAlum[posAlumno][posAsign] = nota;
             System.out.println("Nota actualizada");
-        }catch(ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("El alumno o la asignatura no existen");
         }
 
