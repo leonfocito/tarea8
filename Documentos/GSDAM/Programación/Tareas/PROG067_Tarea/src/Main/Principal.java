@@ -47,6 +47,7 @@ public class Principal {
                         if (fin != null && Curso.compruebaFecha(inicio, fin)) {
                             c = new Curso(inicio, fin);
                             System.out.println("Curso creado con éxito");
+                            System.out.println(Validaciones.separador());
                         } else {
                             System.out.println("La fecha de fin debe ser posterior a la de inicio");
                         }
@@ -128,6 +129,7 @@ y crea el objeto con el valor de la posición reservada para esa asignatura*/
                                     Asignaturas asignatura = Asignaturas.values()[opcion - 1];
                                     c.insertaProfesor(dni, id, nom, email, fechaAltaProfesor, asignatura);
                                     System.out.println("Profesor creado con éxito");
+                                    System.out.println(Validaciones.separador());
                                 }
                             } catch (Exception e) {
                                 System.out.println("El número tiene que ser entre 1 y 7");
@@ -199,31 +201,41 @@ y crea el objeto con el valor de la posición reservada para esa asignatura*/
                         } while (!Validaciones.compruebaEmail(email));
                         //Se crea el usuario invocando el método insertaAlumno() de la clase Curso
                         try {
-                            if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == 0) {
-                                System.out.println("Estudiante creado con éxito");
-                                int numAlumno = c.getNumAlumnosMatriculados();
-                                for (int i = 0; i < Asignaturas.values().length - 1; i++) {
-                                    int[][] nota = new int[numAlumno][c.getNUM_ASIGNATURAS()];
-                                    System.out.println("Introduce la nota de" + Asignaturas.values()[i].getDescripcion());
-                                    nota[numAlumno][i] = sc.nextInt();
-                                    sc.nextLine();
+                            switch (c.insertaAlumno(dni, id, nom, email, fechaMatricula)) {
+                                case 0:
+                                    System.out.println("Estudiante creado con éxito");
+                                    System.out.println(Validaciones.separador());
+                                    int numAlumno = c.devuelveAlmunosMatriculados() - 1;
+                                    int[][] nota = new int[c.getMAX_ALUMNOS()][c.getNUM_ASIGNATURAS()];
+                                    for (int i = 0; i < Asignaturas.values().length; i++) {   
+                                        do {
+                                            System.out.println("Introduce la nota de " + Asignaturas.values()[i].getDescripcion());
+                                            nota[numAlumno][i] = sc.nextInt();
+                                            sc.nextLine();
+                                            if (nota[numAlumno][i] < 0 || nota[numAlumno][i] > 10) {
+                                                System.out.println("La nota tiene que estar entre 1 y 10");
+                                            }
+                                        } while (nota[numAlumno][i] < 0 || nota[numAlumno][i] > 10);                                      
+                                    }
                                     c.setNotasAlum(nota);
-                                }
-
-                            }
-                            if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == -1) {
-                                System.out.println("El curso debe estar creado primero");
-                            }
-                            if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == -2) {
-                                System.out.println("El estudiante ya existe");
-                            }
-                            if (c.insertaAlumno(dni, id, nom, email, fechaMatricula) == -3) {
-                                System.out.println("No hay más espacio");
+                                    break;
+                                case -1:
+                                    System.out.println("El curso debe estar creado primero");
+                                    break;
+                                case -2:
+                                    System.out.println("El estudiante ya existe");
+                                    break;
+                                case -3:
+                                    System.out.println("No hay más espacio");
+                                    break;
+                                default:
+                                    break;
                             }
                         } catch (Exception e) {
                             System.out.println("El cupo de alumnos está lleno");
                         }
                     }
+
                     break;
 
                 case 4:
@@ -267,19 +279,35 @@ y crea el objeto con el valor de la posición reservada para esa asignatura*/
                     if (!Curso.getCreado()) {
                         System.out.println("El curso debe estar creado primero");
                     } else {
-                        String id;
+                        String id;                       
                         System.out.println("Dame el id del profesor");
-                        id=sc.nextLine();
-                        if (!c.existeProfesor(id)){
+                        id = sc.nextLine();                     
+                        if (!c.existeProfesor(id)) {
                             System.out.println("El id no es válido");
-                        }else{
-                            System.out.println("Id:"+id+"\n"
-                                    + "Asignatura:");
+                        } else {
+                            Asignaturas asig=c.getRelacionProfesores()[c.posProfesor(id)].getAsignatura();
+                            System.out.println("Id:" + id + "\n"
+                                    + "Asignatura:"+asig.getDescripcion());
+                            System.out.println(Validaciones.separador());
+                            c.informeAsig(asig.getCodigo());
+                            
                         }
                     }
                     break;
                 case 6:
-
+                    if (!Curso.getCreado()) {
+                        System.out.println("El curso debe estar creado primero");
+                    } else {
+                        System.out.println("Escoge el alumno por su id");
+                        for (int i = 0; i < c.getNumAlumnosMatriculados(); i++) {
+                            System.out.println("Id: " + c.getRelacionAlumnos()[i].getIdentificador() + " Nombre: " + c.getRelacionAlumnos()[i].getNombreCompleto());
+                        }
+                        try {
+                            c.buscaAlumno(sc.nextLine());
+                        } catch (Exception e) {
+                            System.out.println("El id no existe");
+                        }                      
+                    }
                     break;
                 case 7:
 

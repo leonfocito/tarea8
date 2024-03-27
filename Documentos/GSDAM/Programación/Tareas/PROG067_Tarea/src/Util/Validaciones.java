@@ -36,5 +36,8 @@ public class Validaciones {
         }
         return f;
     }
-
+    public static String separador(){
+        String s="-";        
+     return s.repeat(30);   
+    }
 }

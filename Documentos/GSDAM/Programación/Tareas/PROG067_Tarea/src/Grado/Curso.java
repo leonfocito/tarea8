@@ -6,6 +6,7 @@ package Grado;
 
 import java.time.LocalDate;
 import Personas.*;
+import Util.Validaciones;
 
 /**
  *
@@ -117,19 +118,23 @@ public class Curso {
      * Método que busca un alumno por su id.
      *
      * @param id Id por el que buscar al alumno
-     * @return
+     *
      */
-    public String buscaAlumno(String id) {
-        String datos = "";
+    public void buscaAlumno(String id) {
+
         for (int e = 0; e < numAlumnosMatriculados; e++) {
             if (relacionAlumnos[e].getIdentificador().equalsIgnoreCase(id)) {
-                datos = relacionAlumnos[e].imprimeDatos();
-                break;
-            } else {
-                datos = "null";
+                System.out.println(relacionAlumnos[e].imprimeDatos());
+                for (int i = 0; i < Asignaturas.values().length; i++) {
+                    System.out.println("Nota de " + Asignaturas.values()[i].getDescripcion() + " " + notasAlum[e][i]);
+                }
+                String decimal=String.format("%.2f",notaMediaAlum(id));
+                double porcAprobados;
+                porcAprobados=(double)(numAprobadosAlum(id)/NUM_ASIGNATURAS)*100;
+                String porcentaje=String.format("%.2f", porcAprobados);
+                System.out.println("El alumno "+relacionAlumnos[e].getNombreCompleto()+" ha aprobado "+numAprobadosAlum(id)+" lo que supone un "+porcentaje+"% de aprobados y su nota media es "+decimal);
             }
         }
-        return datos;
 
     }
 
@@ -141,6 +146,15 @@ public class Curso {
             }
         }
         return false;
+    }
+    public int posProfesor(String id){
+        int pos=0;
+        for (int p = 0; p < relacionProfesores.length - 1; p++) {
+            if (relacionProfesores[p].getIdentificador().equalsIgnoreCase(id)) {
+                pos=p;
+            }
+        }
+        return pos;
     }
 
     /**
@@ -173,12 +187,8 @@ public class Curso {
      * Método que busca un alumno por su id.
      *
      * @param id Id por el que buscar al alumno
-     * @return
+     * 
      */
-    public String informeAlumno(String id) {
-        return buscaAlumno(id);
-    }
-
     public void insertaProfesor(String dni, String id, String nom, String email, LocalDate alta, Asignaturas asignatura) {
         int pos = Asignaturas.obtenerPosicionPorCodigo(asignatura.getCodigo());
         relacionProfesores[pos] = new Profesor(dni, id, nom, email, alta, asignatura);
@@ -199,9 +209,77 @@ public class Curso {
             posAsign = Asignaturas.obtenerPosicionPorCodigo(asignatura.getCodigo());
             notasAlum[posAlumno][posAsign] = nota;
             System.out.println("Nota actualizada");
+            System.out.println(Validaciones.separador());
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("El alumno o la asignatura no existen");
         }
 
+    }
+
+    public double notaMediaAlum(String id) {
+        int posAlumno = 0;
+        double suma = 0;
+        for (int e = 0; e < numAlumnosMatriculados; e++) {
+            if (relacionAlumnos[e].getIdentificador().equalsIgnoreCase(id)) {
+                posAlumno = e;
+            } else {
+                System.out.println("El id no existe");
+            }
+        }
+        for (int i = 0; i < Asignaturas.values().length; i++) {
+            suma = suma + (double)notasAlum[posAlumno][i];
+        }
+        return suma / NUM_ASIGNATURAS;
+    }
+    public int numAprobadosAlum(String id) {
+        int posAlumno = 0;
+        int cont = 0;
+        for (int e = 0; e < numAlumnosMatriculados; e++) {
+            if (relacionAlumnos[e].getIdentificador().equalsIgnoreCase(id)) {
+                posAlumno = e;
+            } else {
+                System.out.println("El id no existe");
+            }
+        }
+        for (int i = 0; i < Asignaturas.values().length; i++) {
+            if(notasAlum[posAlumno][i]>=5){
+                cont++;
+            }
+        }
+        return cont;
+    }
+    
+    public int getMAX_ALUMNOS() {
+        return MAX_ALUMNOS;
+    }
+    public String informeAsig(String codigo){
+        int pos=Asignaturas.obtenerPosicionPorCodigo(codigo);
+        int apro=0;
+        int susp=0;
+        double porApro;
+        double porSusp;
+        double suma=0;
+        int notaMax=notasAlum[0][0];
+        int notaMin=notasAlum[0][0];
+        for(int i=0;i<numAlumnosMatriculados;i++){
+            suma=suma+notasAlum[i][pos];
+            if(notasAlum[i][pos]>notaMax){
+                notaMax=notasAlum[i][pos];
+            }
+            if(notasAlum[i][pos]>notaMin){
+                notaMin=notasAlum[i][pos];
+            }
+            if (notasAlum[i][pos]>=5){
+                apro++;
+            }else{
+                susp++;
+            }
+        }
+        double notaMedia=suma/numAlumnosMatriculados;
+        porApro=(double)(apro/numAlumnosMatriculados)*100;
+        porSusp=(double)(susp/numAlumnosMatriculados)*100;
+        return "El número de aprobados es de "+apro+". Esto es un "+String.format("%.2f",porApro)+"%\n"
+                + "El número de suspensos es de "+susp+". Esto es un "+String.format("%.2f",porSusp)+"%\n"
+                + "La nota media de esta asignatura es "+String.format("%.2f",notaMedia);
     }
 }
